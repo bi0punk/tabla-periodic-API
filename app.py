@@ -12,6 +12,12 @@ def obtener_usuarios():
 
     print(element_id)
 
+    
+
+
+    """ if element_id == '116':
+        return jsonify({'Elemento': 'Error el elemeto {element_id} aun no existe'}) """ 
+
 
     """ Conexion SQLite """
     conexion = sqlite3.connect('elements.db')
@@ -32,15 +38,18 @@ def obtener_usuarios():
                     'Masa' : fila[3],
                     'Masa exacta' : fila[4],
                     'Ionización' : fila[5],
-                    'Afinidad electrónica' : fila[6]
-
-
-
-
+                    'Afinidad electrónica' : fila[6],
+                    'Electronegatividad' : fila[7],
+                    'Radio covalente' : fila[8],
+                    'Radio de Van der Waals' : fila[9],
+                    'Punto de fusión' : fila[10],
+                    'Punto de ebullición' : fila[11],
+                    'Familia' : fila[12]
+                    }
 
         elementos.append(elemento)
-
-    return jsonify({'Elemento': resultados})
+    """ return jsonify({'Elemento': resultados}) """
+    return jsonify(elementos)
 
 if __name__ == '__main__':
     app.run(debug=True)
