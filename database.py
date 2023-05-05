@@ -15,9 +15,11 @@ c.execute("INSERT INTO my_table (name, value) VALUES ('Item 2', 200)")
 conn.commit()
 
 # retrieve data
-c.execute('SELECT * FROM my_table')
+c.execute('SELECT * FROM Elements;')
 rows = c.fetchall()
 for row in rows:
     print(row)
 
 # close connection
+
+conn.close()
