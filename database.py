@@ -1,18 +1,18 @@
 import sqlite3
 
-conn = sqlite3.connect('my_database.db')
+conn = sqlite3.connect('elements.db')
 c = conn.cursor()
 
-# create table
+""" # create table
 c.execute('''CREATE TABLE IF NOT EXISTS my_table 
-             (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, value INTEGER)''')
+            (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, value INTEGER)''')
 
 # insert data
 c.execute("INSERT INTO my_table (name, value) VALUES ('Item 1', 100)")
 c.execute("INSERT INTO my_table (name, value) VALUES ('Item 2', 200)")
 
 # commit changes
-conn.commit()
+conn.commit() """
 
 # retrieve data
 c.execute('SELECT * FROM Elements;')
