@@ -8,7 +8,9 @@ app = Flask(__name__)
 @app.route('/elements', methods=['POST'])
 def obtener_usuarios():
     # Obtener los parámetros de la petición POST
-    nombre = request.args['nombre']
+    element_id = request.args['id']
+
+    print(element_id)
 
 
     # Conectar a la base de datos SQLite
@@ -16,7 +18,7 @@ def obtener_usuarios():
     cursor = conexion.cursor()
 
     # Ejecutar una consulta SQL para buscar los usuarios
-    cursor.execute('SELECT * FROM Elements WHERE NumeroAtomico=?', (nombre))
+    cursor.execute('SELECT * FROM Elements WHERE NumeroAtomico = ?', (element_id))
     resultados = cursor.fetchall()
     print(resultados)
 
