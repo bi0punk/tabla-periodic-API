@@ -12,7 +12,7 @@ def get_db():
 def get_data():
    db = get_db()
    """ data = request.get_json() """
-   data = request.args.get("fname")
+   data = request.args.get("id")
    id = data['id']
    print(id)
    db.execute('SELECT * FROM Elements WHERE id = ?', (id,))
