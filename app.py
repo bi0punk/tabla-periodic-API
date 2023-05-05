@@ -7,26 +7,38 @@ app = Flask(__name__)
 
 @app.route('/elements', methods=['POST'])
 def obtener_usuarios():
-    # Obtener los parámetros de la petición POST
+    """ Petición POST """
     element_id = request.args['id']
 
     print(element_id)
 
 
-    # Conectar a la base de datos SQLite
+    """ Conexion SQLite """
     conexion = sqlite3.connect('elements.db')
     cursor = conexion.cursor()
 
-    # Ejecutar una consulta SQL para buscar los usuarios
-    cursor.execute('SELECT * FROM Elements WHERE NumeroAtomico = ?', (element_id))
+    # Ejecutar una consulta SQL para buscar los elementos
+    cursor.execute('SELECT * FROM Elements WHERE NumeroAtomico = ?;', ([element_id]))
+    """ cursor.execute("SELECT * FROM Elements WHERE NumeroAtomica = ?;", [element_id]) """
     resultados = cursor.fetchall()
     print(resultados)
 
     # Convertir los resultados en un objeto JSON y devolverlos
-    usuarios = []
-    """ for fila in resultados:
-        usuario = {'id': fila[0], 'nombre': fila[1], 'apellido': fila[2]}
-        usuarios.append(usuario) """
+    elementos = []
+    for fila in resultados:
+        elemento = {'Nombre': fila[0], 
+                    'Número átomico': fila[1],
+                    'Símbolo': fila[2],
+                    'Masa' : fila[3],
+                    'Masa exacta' : fila[4],
+                    'Ionización' : fila[5],
+                    'Afinidad electrónica' : fila[6]
+
+
+
+
+
+        elementos.append(elemento)
 
     return jsonify({'Elemento': resultados})
 
