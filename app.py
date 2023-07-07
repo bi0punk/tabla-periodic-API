@@ -3,26 +3,19 @@ import sqlite3
 
 app = Flask(__name__)
 
-
-
 @app.route('/elements', methods=['POST'])
 def obtener_usuarios():
     """ Petición POST """
     element_id = request.args['id']
     print(element_id)
-
     
     """ Conexion SQLite """
     conexion = sqlite3.connect('elements.db')
     cursor = conexion.cursor()
-
-
     cursor.execute('SELECT * FROM Elements WHERE NumeroAtomico = ?;', ([element_id]))
     """ cursor.execute("SELECT * FROM Elements WHERE NumeroAtomica = ?;", [element_id]) """
     resultados = cursor.fetchall()
     print(resultados)
-
-
     elementos = []
     for fila in resultados:
         elemento = {'Nombre': fila[0], 
@@ -39,7 +32,6 @@ def obtener_usuarios():
                     'Punto de ebullición' : fila[11],
                     'Familia' : fila[12]
                     }
-
         elementos.append(elemento)
     """ return jsonify({'Elemento': resultados}) """
     return jsonify(elementos)
