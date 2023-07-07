@@ -8,7 +8,6 @@ def obtener_usuarios():
     """ Petición POST """
     element_id = request.args['id']
     print(element_id)
-    
     """ Conexion SQLite """
     conexion = sqlite3.connect('elements.db')
     cursor = conexion.cursor()
