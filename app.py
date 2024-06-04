@@ -1,45 +1,76 @@
-from flask import Flask, jsonify, request
-import sqlite3
+from fastapi import FastAPI, HTTPException, Depends
+from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, Session
 
-app = Flask(__name__)
+# Configuración de la base de datos
+DATABASE_URL = "sqlite:///./elements.db"
 
-def obtener_elementos(element_id):
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base = declarative_base()
+
+class Elemento(Base):
+    __tablename__ = "elementos"
+    id = Column(Integer, primary_key=True, index=True)
+    nombre = Column(String, index=True)
+    simbolo = Column(String, index=True)
+    numero_atomico = Column(Integer, index=True)
+    peso_atomico = Column(String, index=True)
+
+Base.metadata.create_all(bind=engine)
+
+app = FastAPI()
+
+def get_db():
+    db = SessionLocal()
     try:
-        conexion = sqlite3.connect('elements.db')
-        cursor = conexion.cursor()
-        cursor.execute('SELECT * FROM Elements WHERE NumeroAtomico = ?;', (element_id,))
-        resultados = cursor.fetchall()
-        elementos = []
-        for fila in resultados:
-            elemento = {
-                'Nombre': fila[0], 
-                'Número átomico': fila[1],
-                'Símbolo': fila[2],
-                'Masa': fila[3],
-                'Masa exacta': fila[4],
-                'Ionización': fila[5],
-                'Afinidad electrónica': fila[6],
-                'Electronegatividad': fila[7],
-                'Radio covalente': fila[8],
-                'Radio de Van der Waals': fila[9],
-                'Punto de fusión': fila[10],
-                'Punto de ebullición': fila[11],
-                'Familia': fila[12]
-            }
-            elementos.append(elemento)
-        return elementos
-    except sqlite3.Error as e:
-        print(f"Error en la base de datos: {e}")
-        return []
+        yield db
+    finally:
+        db.close()
 
-@app.route('/elements', methods=['POST'])
-def obtener_usuarios():
-    element_id = request.args.get('id')
-    if element_id is not None:
-        elementos = obtener_elementos(element_id)
-        return jsonify(elementos)
-    else:
-        return jsonify({'error': 'Parámetro "id" no proporcionado'})
+@app.get("/elementos/", response_model=list[Elemento])
+def leer_elementos(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    elementos = db.query(Elemento).offset(skip).limit(limit).all()
+    return elementos
 
-if __name__ == '__main__':
-    app.run(debug=True)
+@app.get("/elementos/{elemento_id}", response_model=Elemento)
+def leer_elemento(elemento_id: int, db: Session = Depends(get_db)):
+    elemento = db.query(Elemento).filter(Elemento.id == elemento_id).first()
+    if elemento is None:
+        raise HTTPException(status_code=404, detail="Elemento no encontrado")
+    return elemento
+
+@app.post("/elementos/", response_model=Elemento)
+def crear_elemento(elemento: Elemento, db: Session = Depends(get_db)):
+    db.add(elemento)
+    db.commit()
+    db.refresh(elemento)
+    return elemento
+
+@app.put("/elementos/{elemento_id}", response_model=Elemento)
+def actualizar_elemento(elemento_id: int, elemento_actualizado: Elemento, db: Session = Depends(get_db)):
+    elemento = db.query(Elemento).filter(Elemento.id == elemento_id).first()
+    if elemento is None:
+        raise HTTPException(status_code=404, detail="Elemento no encontrado")
+    elemento.nombre = elemento_actualizado.nombre
+    elemento.simbolo = elemento_actualizado.simbolo
+    elemento.numero_atomico = elemento_actualizado.numero_atomico
+    elemento.peso_atomico = elemento_actualizado.peso_atomico
+    db.commit()
+    db.refresh(elemento)
+    return elemento
+
+@app.delete("/elementos/{elemento_id}", response_model=Elemento)
+def eliminar_elemento(elemento_id: int, db: Session = Depends(get_db)):
+    elemento = db.query(Elemento).filter(Elemento.id == elemento_id).first()
+    if elemento is None:
+        raise HTTPException(status_code=404, detail="Elemento no encontrado")
+    db.delete(elemento)
+    db.commit()
+    return elemento
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
