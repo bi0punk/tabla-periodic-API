@@ -1,3 +1,5 @@
+![tabla-periodic-API](https://socialify.git.ci/bi0punk/tabla-periodic-API/image?language=1&owner=1&name=1&stargazers=1&theme=Light)
+
 # Tabla Periódica API
 
 Esta es una API desarrollada con FastAPI que proporciona información sobre los elementos de la tabla periódica.
