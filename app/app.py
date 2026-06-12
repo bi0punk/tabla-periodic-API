@@ -68,4 +68,4 @@ async def get_open_api_endpoint():
     return app.openapi()
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run(app, host="0.0.0.0", port=8000, reload=False)
