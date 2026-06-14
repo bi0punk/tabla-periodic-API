@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 import json
 import uvicorn
+from pathlib import Path
 
 app = FastAPI()
 
@@ -28,7 +29,8 @@ class Elemento(BaseModel):
 
 # Cargar los datos de manera eficiente
 def cargar_datos():
-    with open("elements.json", "r") as file:
+    db_path = Path(__file__).resolve().parent.parent / "database" / "elements.json"
+    with open(db_path, "r") as file:
         return json.load(file)
 
 # Almacenar los datos cargados
