@@ -44,6 +44,8 @@ async def listar_elementos():
 @app.get("/elementos/{numero_atomico}", response_model=Elemento)
 async def obtener_elemento(numero_atomico: int):
     """Devuelve los datos de un elemento específico según su número atómico"""
+    if not 1 <= numero_atomico <= 118:
+        raise HTTPException(status_code=400, detail="Número atómico inválido. Debe estar entre 1 y 118.")
     for elemento in tabla_periodica_data:
         if elemento["atomic_number"] == str(numero_atomico):
             return elemento
