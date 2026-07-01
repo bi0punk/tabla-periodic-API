@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException, Query
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict
 from typing import List, Optional
 import json
 import uvicorn
@@ -23,9 +23,7 @@ class Elemento(BaseModel):
     boiling_point: Optional[str] = None
     family: str
 
-    class Config:
-        # Esto permite que los campos opcionales sean None si no están presentes
-        anystr_strip_whitespace = True
+    model_config = ConfigDict(str_strip_whitespace=True)
 
 # Cargar los datos de manera eficiente
 def cargar_datos():
