@@ -1,14 +1,81 @@
-![tabla-periodic-API](https://socialify.git.ci/bi0punk/tabla-periodic-API/image?language=1&owner=1&name=1&stargazers=1&theme=Light)
+# tabla-periodic-API
 
-# Tabla Periódica API
+API REST desarrollada con FastAPI que proporciona información sobre los 118 elementos de la tabla periódica. Los datos se sirven desde un JSON embebido en el repositorio.
 
-API desarrollada con FastAPI que proporciona información sobre los 118 elementos de la tabla periódica. Los datos se sirven desde un JSON embebido en el repositorio.
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.11+-blue)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-API-009688)](https://fastapi.tiangolo.com)
+[![CI](https://github.com/bi0punk/tabla-periodic-API/actions/workflows/ci.yml/badge.svg)](https://github.com/bi0punk/tabla-periodic-API/actions/workflows/ci.yml)
 
-## Requisitos
+## Contenido
 
-- Python 3.8+
+- [Características](#características)
+- [Arquitectura](#arquitectura)
+- [Stack](#stack)
+- [Estructura del repositorio](#estructura-del-repositorio)
+- [Instalación](#instalación)
+- [Uso](#uso)
+- [Endpoints](#endpoints)
+- [Documentación interactiva](#documentación-interactiva)
+- [Tests / CI](#tests--ci)
+- [Roadmap](#roadmap)
+- [Licencia](#licencia)
+
+## Características
+
+- Listado de los 118 elementos de la tabla periódica
+- Obtención de un elemento por número atómico (1-118)
+- Búsqueda por nombre con coincidencia parcial, insensible a mayúsculas
+- Datos servidos desde `database/elements.json` (en español), con `elements.db` como respaldo
+- Documentación interactiva automática (Swagger UI y ReDoc)
+
+## Arquitectura
+
+```mermaid
+flowchart TD
+  C[Cliente HTTP] -->|GET /elementos/| L[listar_elementos]
+  C -->|GET /elementos/{n}| O[obtener_elemento]
+  C -->|GET /search/?nombre=...| S[buscar_elemento]
+  L --> D[tabla_periodica_data cargada de elements.json]
+  O --> D
+  S --> D
+  O -->|fuera de rango 1-118| E400[400]
+  O -->|no encontrado| E404[404]
+  S -->|sin nombre| E400
+  S -->|sin coincidencias| E404
+  D --> J[database/elements.json]
+  D --> B[database/elements.db]
+```
+
+## Stack
+
+- Python 3.11+
 - FastAPI
 - Uvicorn
+- Pydantic (modelos de datos)
+- pytest + httpx (pruebas)
+
+## Estructura del repositorio
+
+```
+tabla-periodic-API/
+├── app/
+│   └── app.py                 # Modelos, rutas y arranque
+├── database/
+│   ├── elements.json          # Datos de los 118 elementos
+│   └── elements.db            # Base de datos SQLite de respaldo
+├── test/
+│   ├── test_app.py
+│   └── test_routes.py
+├── .github/workflows/
+│   └── ci.yml
+├── requirements.txt
+├── requirements-dev.txt
+├── pyproject.toml
+├── .gitignore
+├── LICENSE
+└── README.md
+```
 
 ## Instalación
 
@@ -32,14 +99,7 @@ API desarrollada con FastAPI que proporciona información sobre los 118 elemento
    pip install -r requirements.txt
    ```
 
-## Archivos
-
-- `app/app.py`: código principal de la API (modelos, rutas y arranque).
-- `database/elements.json`: datos de los elementos (118 elementos, en español).
-- `database/elements.db`: base de datos SQLite de respaldo.
-- `test/test_app.py`, `test/test_routes.py`: pruebas con `TestClient`.
-
-## Ejecución
+## Uso
 
 Para iniciar la aplicación:
 
@@ -113,7 +173,7 @@ Ejemplo: `GET /elementos/1`
 }
 ```
 
-Retorna `400` si el número atómico está fuera del rango 1–118.
+Retorna `400` si el número atómico está fuera del rango 1-118.
 
 ### Buscar elemento por nombre
 
@@ -144,6 +204,24 @@ FastAPI expone automáticamente:
 
 - `GET /docs` — Swagger UI
 - `GET /redoc` — ReDoc
+
+## Tests / CI
+
+```sh
+pip install -r requirements-dev.txt
+pytest
+```
+
+GitHub Actions (`.github/workflows/ci.yml`) ejecuta ruff lint + pytest sobre Python 3.12 en push/PR a `main`/`master`.
+
+## Roadmap
+
+- [x] Listado de los 118 elementos
+- [x] Elemento por número atómico
+- [x] Búsqueda por nombre
+- [ ] Filtros por familia/química
+- [ ] Paginación en `/elementos/`
+- [ ] Soporte multi-idioma de los datos
 
 ## Licencia
 
