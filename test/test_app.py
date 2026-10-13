@@ -32,7 +32,10 @@ def test_obtener_elemento_por_numero_atomico_valido():
 def test_obtener_elemento_por_numero_atomico_fuera_de_rango():
     response = client.get("/elementos/200")
     assert response.status_code == 400
-    assert "inválido" in response.json()["detail"].lower() or "invalid" in response.json()["detail"].lower()
+    assert (
+        "inválido" in response.json()["detail"].lower()
+        or "invalid" in response.json()["detail"].lower()
+    )
 
 
 def test_obtener_elemento_no_existente():
